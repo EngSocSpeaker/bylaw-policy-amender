@@ -24,5 +24,5 @@ jobs:
           python_ver: '3.11'
           spec: 'gui.py'
           requirements: 'requirements.txt'
-          upload_exe_with_name: 'amender-${{ matrix.os }}-${{ github.run_number }}-${{ github.run_attempt }}.exe'
+          upload_exe_with_name: 'amender-${{ matrix.os }}-${{ github.run_number }}.${{ github.run_attempt }}'
           options: --onefile, --windowed
