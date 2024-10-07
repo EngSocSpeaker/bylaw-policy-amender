@@ -8,6 +8,7 @@ on:
 
 jobs:
   pyinstaller-build:
+    name: Build Executable
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
