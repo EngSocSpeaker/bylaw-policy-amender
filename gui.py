@@ -1,8 +1,14 @@
 import re
 import sys
 from typing import cast
-from PySide6.QtCore import QAbstractItemModel, QAbstractTableModel, QModelIndex, QPersistentModelIndex, Qt
-from PySide6.QtWidgets import QApplication, QStyleOptionViewItem, QWidget, QVBoxLayout, QLabel, QTableView, QPushButton, QStyledItemDelegate, QComboBox, QStyleFactory, QLineEdit, QHeaderView, QTextEdit
+from PySide6.QtCore import (
+    QAbstractItemModel, QAbstractTableModel, QModelIndex, QPersistentModelIndex, Qt
+)
+from PySide6.QtWidgets import (
+    QApplication, QStyleOptionViewItem, QWidget, QVBoxLayout, QLabel,
+    QTableView, QPushButton, QStyledItemDelegate, QComboBox, QStyleFactory,
+    QLineEdit, QHeaderView, QTextEdit
+)
 
 from github import gh
 from str_manip import SectionValidator, sectionToTuple, sectionsForLines, texToLines

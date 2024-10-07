@@ -4,7 +4,10 @@ from typing import Any, TypedDict
 import requests
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QGuiApplication
-from PySide6.QtWidgets import QDialog, QLineEdit, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QLabel, QMessageBox, QSizePolicy
+from PySide6.QtWidgets import (
+    QDialog, QLineEdit, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QLabel,
+    QMessageBox
+)
 
 CLIENT_ID: str = 'Iv23lixE9BO6XLUTLthN'
 CODE_URL: str = 'https://github.com/login/device/code'
