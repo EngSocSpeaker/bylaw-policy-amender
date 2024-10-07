@@ -2,7 +2,7 @@ import re
 import sys
 from typing import cast
 from PySide6.QtCore import QAbstractItemModel, QAbstractTableModel, QModelIndex, QPersistentModelIndex, Qt
-from PySide6.QtWidgets import QApplication, QStyleOptionViewItem, QWidget, QVBoxLayout, QLabel, QTableView, QPushButton, QStyledItemDelegate, QComboBox, QStyleFactory, QLineEdit, QHeaderView, QItemEditorFactory
+from PySide6.QtWidgets import QApplication, QStyleOptionViewItem, QWidget, QVBoxLayout, QLabel, QTableView, QPushButton, QStyledItemDelegate, QComboBox, QStyleFactory, QLineEdit, QHeaderView, QTextEdit
 
 from github import gh
 from str_manip import SectionValidator, sectionToTuple, sectionsForLines, texToLines
@@ -35,6 +35,19 @@ class FileSectionDelegate(QStyledItemDelegate):
 
     def setModelData(self, line: QLineEdit, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         model.setData(index, line.text(), Qt.ItemDataRole.EditRole)
+
+class ProposedAmendmentDelegate(QStyledItemDelegate):
+
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex | QPersistentModelIndex) -> QWidget:
+        box = QTextEdit(parent)
+        self.setEditorData(box, index)
+        return box
+
+    def setEditorData(self, box: QTextEdit, index: QModelIndex | QPersistentModelIndex) -> None:
+        box.setText(str(index.data(Qt.ItemDataRole.EditRole)))
+
+    def setModelData(self, box: QTextEdit, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
+        model.setData(index, box.toPlainText(), Qt.ItemDataRole.EditRole)
 
 class AmendmentsModel(QAbstractTableModel):
     def __init__(self) -> None:
@@ -139,8 +152,10 @@ class AmendmentsView(QTableView):
 
         treeFileDelegate = TreeFileDelegate(self)
         fileSectionDelegate = FileSectionDelegate(self)
+        proposedAmendmentDelegate = ProposedAmendmentDelegate(self)
         self.setItemDelegateForColumn(0, treeFileDelegate)
         self.setItemDelegateForColumn(1, fileSectionDelegate)
+        self.setItemDelegateForColumn(3, proposedAmendmentDelegate)
         self.verticalHeader().hide()
         self.resizeColumnsToContents()
 
