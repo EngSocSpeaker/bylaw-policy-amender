@@ -81,12 +81,11 @@ class TeXSource:
         )
 
 class SectionValidator(QValidator):
-    def __init__(self, validSections: set[Section], start2: int = 0) -> None:
+    def __init__(self, tex: TeXSource) -> None:
         super().__init__()
 
-        self.validSections = validSections
-        print('\n'.join(map(str, sorted(self.validSections))))
-        self.start2 = start2
+        self.tex = tex
+        print('\n'.join(map(str, sorted(self.tex.linenos.keys()))))
 
     def validate(self, text: str, pos: int) -> object:
         if m := re.fullmatch(SECTION_RE, text, re.I):
@@ -94,8 +93,8 @@ class SectionValidator(QValidator):
                 # there's no way to get to a valid Roman numeral
                 # by going through an invalid one
                 return QValidator.State.Invalid
-            section = sectionToTuple(text, self.start2)
-            if section not in self.validSections:
+            section = self.tex.sectionToTuple(text)
+            if section not in self.tex.linenos:
                 # there's no way to get a valid section
                 # by going through an invalid one
                 return QValidator.State.Invalid
