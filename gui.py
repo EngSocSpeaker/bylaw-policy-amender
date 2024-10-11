@@ -78,7 +78,7 @@ class Amender(QWidget):
         if not rows:
             return
         firstRow = rows[0]
-        for row in rows:
+        for row in rows[::-1]:
             self.amendmentsModel.removeRow(row)
         self._resize()
         self.amendmentsView.selectRow(firstRow)
