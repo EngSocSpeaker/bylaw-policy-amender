@@ -13,16 +13,6 @@ ROMAN = [
 
 Section = tuple[int, int, int, int, int]
 
-def sectionToTuple(section: str, start2: int = 0) -> Section:
-    strTuple = section.strip().lower().split('.')
-    return (
-        int(strTuple[0]),
-        (int(strTuple[1]) - start2) if len(strTuple) > 1 else -1,
-        (int(strTuple[2]) - 1) if len(strTuple) > 2 else -1,
-        (ord(strTuple[3]) - ord('a')) if len(strTuple) > 3 else -1,
-        ROMAN.index(strTuple[4]) if len(strTuple) > 4 else -1
-    )
-
 def texToLines(tex: str) -> list[str]:
     lines = re.split(r'[^\S\n]*\n', tex);
     result: list[str] = []
@@ -63,6 +53,32 @@ def sectionsForLines(lines: list[str]) -> list[Section | None]:
         else:
             continue # not list item
     return result
+
+class TeXSource:
+
+    tex: str
+    lines: list[str]
+    linenos: dict[Section, int]
+    sections = list[Section | None]
+    start2: int = 0
+
+    def __init__(self, tex: str) -> None:
+        self.tex = tex
+        self.lines = texToLines(self.tex)
+        self.sections = sectionsForLines(self.lines)
+        self.linenos = {section: i for i, section in enumerate(self.sections)
+                        if section is not None}
+        self.start2 = 0 if 'Start2=0' in self.tex else 1
+
+    def sectionToTuple(self, section: str) -> Section:
+        strTuple = section.strip().strip('.').lower().split('.')
+        return (
+            int(strTuple[0]),
+            (int(strTuple[1]) - self.start2) if len(strTuple) > 1 else -1,
+            (int(strTuple[2]) - 1) if len(strTuple) > 2 else -1,
+            (ord(strTuple[3]) - ord('a')) if len(strTuple) > 3 else -1,
+            ROMAN.index(strTuple[4]) if len(strTuple) > 4 else -1
+        )
 
 class SectionValidator(QValidator):
     def __init__(self, validSections: set[Section], start2: int = 0) -> None:
