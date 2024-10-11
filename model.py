@@ -1,3 +1,4 @@
+import json
 import re
 from typing import cast
 from PySide6.QtCore import (
@@ -172,3 +173,22 @@ class AmendmentsModel(QAbstractTableModel):
         if index.column() != 2:
             flag |= Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsSelectable
         return flag
+
+    def open(self, path: str) -> None:
+        with open(path, 'r') as f:
+            amendments = json.load(f)
+        delta = len(amendments) - len(self.amendments)
+        if delta > 0:
+            self.insertRows(0, delta)
+        else:
+            self.removeRows(0, -delta)
+        self.amendments = amendments
+        self.dataChanged.emit(
+            self.index(0, 0),
+            self.index(self.rowCount() - 1, self.columnCount() - 1),
+            list(ROLES)
+        )
+
+    def save(self, path: str) -> None:
+        with open(path, 'w') as f:
+            json.dump(self.amendments, f, indent='\t')

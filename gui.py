@@ -11,6 +11,8 @@ from model import (
     AmendmentsModel
 )
 
+FILTER = 'JSON Files (*.json)'
+
 class AmendmentsView(QTableView):
     def __init__(self) -> None:
         super().__init__()
@@ -59,11 +61,21 @@ class Amender(QWidget):
 
         self.addAmendment()
 
+        openButton = QPushButton('Open')
+        openButton.clicked.connect(self.openAmendments)
+        saveButton = QPushButton('Save')
+        saveButton.clicked.connect(self.saveAmendments)
+
+        fileLayout = QHBoxLayout()
+        fileLayout.addWidget(openButton)
+        fileLayout.addWidget(saveButton)
+
         layout = QVBoxLayout(self)
 
         layout.addWidget(header)
         layout.addLayout(buttonLayout)
         layout.addWidget(self.amendmentsView)
+        layout.addLayout(fileLayout)
 
         self.setLayout(layout)
 
@@ -96,6 +108,17 @@ class Amender(QWidget):
         self.amendmentsView.resizeColumnToContents(0)
         self.amendmentsView.resizeColumnToContents(1)
         self.amendmentsView.resizeRowsToContents()
+
+    def openAmendments(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(self, filter=FILTER, selectedFilter=FILTER)
+        self.amendmentsModel.open(path)
+        for i in range(self.amendmentsModel.rowCount()):
+            self.amendmentsView.openPersistentEditor(self.amendmentsModel.index(i, 0))
+        self._resize()
+
+    def saveAmendments(self) -> None:
+        path, _ = QFileDialog.getSaveFileName(self, filter=FILTER, selectedFilter=FILTER)
+        self.amendmentsModel.save(path)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
