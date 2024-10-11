@@ -27,7 +27,9 @@ class TreeFileDelegate(QStyledItemDelegate):
         return cb
 
     def setEditorData(self, cb: QComboBox, index: QModelIndex | QPersistentModelIndex) -> None:
+        state = cb.blockSignals(True)
         cb.setCurrentText(str(index.data(Qt.ItemDataRole.EditRole)))
+        cb.blockSignals(state)
 
     def setModelData(self, cb: QComboBox, model: QAbstractItemModel, index: QModelIndex | QPersistentModelIndex) -> None:
         model.setData(index, cb.currentText(), Qt.ItemDataRole.EditRole)
