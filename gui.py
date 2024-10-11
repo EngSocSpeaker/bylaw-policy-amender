@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel,
+    QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel,
     QTableView, QPushButton, QStyleFactory, QHeaderView
 )
 
@@ -37,8 +37,14 @@ class Amender(QWidget):
 
         header = QLabel('<h1>Bylaw/Policy Amendments</h1>')
 
-        button = QPushButton('Add')
-        button.clicked.connect(self.addAmendment)
+        addButton = QPushButton('Add')
+        addButton.clicked.connect(self.addAmendment)
+        delButton = QPushButton('Remove')
+        delButton.clicked.connect(self.delAmendment)
+
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(addButton)
+        buttonLayout.addWidget(delButton)
 
         self.amendmentsView = AmendmentsView()
         self.amendmentsView.setModel(self.amendmentsModel)
@@ -53,7 +59,7 @@ class Amender(QWidget):
         layout = QVBoxLayout(self)
 
         layout.addWidget(header)
-        layout.addWidget(button)
+        layout.addLayout(buttonLayout)
         layout.addWidget(self.amendmentsView)
 
         self.setLayout(layout)
@@ -65,6 +71,15 @@ class Amender(QWidget):
             path = [item['path'] for item in gh.getTree('skule/bylaws') if item['path'].endswith('.tex')][0]
         self.amendmentsModel.appendRow(path)
         self.amendmentsView.openPersistentEditor(self.amendmentsModel.index(self.amendmentsModel.rowCount() - 1, 0))
+        self._resize()
+
+    def delAmendment(self) -> None:
+        for index in sorted(self.amendmentsView.selectedIndexes(),
+                            key=lambda i: i.row(), reverse=True):
+            self.amendmentsModel.removeRow(index.row())
+        self._resize()
+
+    def _resize(self) -> None:
         self.amendmentsView.resizeColumnToContents(0)
         self.amendmentsView.resizeColumnToContents(1)
         self.amendmentsView.resizeRowsToContents()

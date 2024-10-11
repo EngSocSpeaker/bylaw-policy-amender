@@ -103,6 +103,16 @@ class AmendmentsModel(QAbstractTableModel):
         self.endInsertRows()
         return True
 
+    def removeRows(self, row: int, count: int, parent: QModelIndex | QPersistentModelIndex = QModelIndex()) -> bool:
+        if row + count - 1 < 0 or row > self.rowCount():
+            return False
+        first = max(0, row)
+        last = min(self.rowCount() - 1, row + count - 1)
+        self.beginRemoveRows(parent, first, last)
+        del self.amendments[first:last+1]
+        self.endRemoveRows()
+        return True
+
     def rowCount(self, parent=...) -> int:
         return len(self.amendments)
 
