@@ -59,7 +59,7 @@ class TeXSource:
     tex: str
     lines: list[str]
     linenos: dict[Section, int]
-    sections = list[Section | None]
+    sections: list[Section | None]
     start2: int = 0
 
     def __init__(self, tex: str) -> None:
