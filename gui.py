@@ -80,6 +80,8 @@ class Amender(QWidget):
         firstRow = rows[0]
         for row in rows[::-1]:
             self.amendmentsModel.removeRow(row)
+        if self.amendmentsModel.rowCount() == 0:
+            self.addAmendment()
         self._resize()
         self.amendmentsView.selectRow(firstRow)
 
