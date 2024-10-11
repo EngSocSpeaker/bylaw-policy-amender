@@ -46,20 +46,20 @@ def texToLines(tex: str) -> list[str]:
         result[-1] = result[-1].rstrip() + ' ' + line.strip()
     return result
 
-def sectionsForLines(lines: list[str]) -> dict[Section, int]:
+def sectionsForLines(lines: list[str]) -> list[Section | None]:
     currentSection = [-1, -1, -1, -1, -1]
-    result: dict[Section, int] = {}
+    result: list[Section | None] = [None] * len(lines)
     for i, line in enumerate(lines):
         if line.startswith(r'\section'):
             currentSection[0] += 1
             currentSection[1:] = [-1] * len(currentSection[1:])
-            result[cast(Section, tuple(currentSection))] = i
+            result[i] = cast(Section, tuple(currentSection))
             continue
         if line.strip().startswith('&'):
             depth = len(re.findall(r'^&+', line.strip())[0])
             currentSection[depth - 1] += 1
             currentSection[depth:] = [-1] * len(currentSection[depth:])
-            result[cast(Section, tuple(currentSection))] = i
+            result[i] = cast(Section, tuple(currentSection))
         else:
             continue # not list item
     return result
