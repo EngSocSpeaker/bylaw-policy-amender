@@ -74,10 +74,14 @@ class Amender(QWidget):
         self._resize()
 
     def delAmendment(self) -> None:
-        for index in sorted(self.amendmentsView.selectedIndexes(),
-                            key=lambda i: i.row(), reverse=True):
-            self.amendmentsModel.removeRow(index.row())
+        rows = sorted({i.row() for i in self.amendmentsView.selectedIndexes()})
+        if not rows:
+            return
+        firstRow = rows[0]
+        for row in rows:
+            self.amendmentsModel.removeRow(row)
         self._resize()
+        self.amendmentsView.selectRow(firstRow)
 
     def _resize(self) -> None:
         self.amendmentsView.resizeColumnToContents(0)
