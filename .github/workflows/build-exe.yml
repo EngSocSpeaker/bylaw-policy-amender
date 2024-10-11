@@ -24,5 +24,26 @@ jobs:
           python_ver: '3.11'
           spec: 'gui.py'
           requirements: 'requirements.txt'
-          upload_exe_with_name: 'amender-${{ matrix.os }}-${{ github.run_number }}.${{ github.run_attempt }}'
           options: --onefile, --windowed
+
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'amender-${{ matrix.os }}'
+          path: ./dist
+          if-no-files-found: error
+
+      - name: Upload Executable to Release
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: GitHub Actions
+          GIT_AUTHOR_EMAIL: github-actions@github.com
+        run: |
+          git rm .gitignore
+          git add dist
+          git commit -m "HACK"
+          cd dist
+          git archive --format=zip -o amender-${{ matrix.os }}.zip HEAD .
+          gh release upload ${{ github.event.release.tag_name }} amender-${{ matrix.os }}.zip
