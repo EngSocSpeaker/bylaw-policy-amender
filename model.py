@@ -12,6 +12,12 @@ from PySide6.QtWidgets import (
 from github import gh
 from str_manip import TeXSource, SectionValidator
 
+ROLES = {
+    Qt.ItemDataRole.DisplayRole,
+    Qt.ItemDataRole.EditRole,
+    Qt.ItemDataRole.AccessibleTextRole,
+}
+
 class TreeFileDelegate(QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex | QPersistentModelIndex) -> QWidget:
         cb = QComboBox(parent)
@@ -75,11 +81,7 @@ class AmendmentsModel(QAbstractTableModel):
         return self.sources[path]
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole = Qt.ItemDataRole.DisplayRole):
-        if role not in {
-            Qt.ItemDataRole.DisplayRole,
-            Qt.ItemDataRole.EditRole,
-            Qt.ItemDataRole.AccessibleTextRole,
-        }:
+        if role not in ROLES:
             return None
         if orientation == Qt.Orientation.Vertical:
             return None
@@ -122,11 +124,7 @@ class AmendmentsModel(QAbstractTableModel):
     def data(self, index: QModelIndex | QPersistentModelIndex, role: Qt.ItemDataRole = Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
             return None
-        if role not in {
-            Qt.ItemDataRole.DisplayRole,
-            Qt.ItemDataRole.EditRole,
-            Qt.ItemDataRole.AccessibleTextRole,
-        }:
+        if role not in ROLES:
             return None
         try:
             return self.amendments[index.row()][index.column()]
@@ -134,11 +132,7 @@ class AmendmentsModel(QAbstractTableModel):
             return None
 
     def setData(self, index: QModelIndex | QPersistentModelIndex, value, role: Qt.ItemDataRole = Qt.ItemDataRole.DisplayRole) -> bool:
-        if role not in {
-            Qt.ItemDataRole.DisplayRole,
-            Qt.ItemDataRole.EditRole,
-            Qt.ItemDataRole.AccessibleTextRole,
-        }:
+        if role not in ROLES:
             return False
         if index.column() == 2:
             return False
