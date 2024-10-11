@@ -156,6 +156,15 @@ class AmendmentsModel(QAbstractTableModel):
             self.dataChanged.emit(self.index(index.row(), 3), self.index(index.row(), 3))
         return True
 
+    def naturalSort(self) -> None:
+        self.amendments.sort(
+            key=lambda i: (i[0], i[1] and self.source(i[0]).sectionToTuple(i[1])))
+        self.dataChanged.emit(
+            self.index(0, 0),
+            self.index(self.rowCount() - 1, self.columnCount() - 1),
+            list(ROLES)
+        )
+
     def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
         flag = Qt.ItemFlag.ItemIsEnabled
         if index.column() != 2:

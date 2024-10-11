@@ -41,10 +41,13 @@ class Amender(QWidget):
         addButton.clicked.connect(self.addAmendment)
         delButton = QPushButton('Remove')
         delButton.clicked.connect(self.delAmendment)
+        sortButton = QPushButton('Sort')
+        sortButton.clicked.connect(self.sortAmendments)
 
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(addButton)
         buttonLayout.addWidget(delButton)
+        buttonLayout.addWidget(sortButton)
 
         self.amendmentsView = AmendmentsView()
         self.amendmentsView.setModel(self.amendmentsModel)
@@ -84,6 +87,10 @@ class Amender(QWidget):
             self.addAmendment()
         self._resize()
         self.amendmentsView.selectRow(firstRow)
+
+    def sortAmendments(self) -> None:
+        self.amendmentsModel.naturalSort()
+        self._resize()
 
     def _resize(self) -> None:
         self.amendmentsView.resizeColumnToContents(0)
