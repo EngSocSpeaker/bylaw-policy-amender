@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel,
+    QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QFileDialog,
     QTableView, QPushButton, QStyleFactory, QHeaderView
 )
 
@@ -65,10 +65,13 @@ class Amender(QWidget):
         openButton.clicked.connect(self.openAmendments)
         saveButton = QPushButton('Save')
         saveButton.clicked.connect(self.saveAmendments)
+        docxButton = QPushButton('Export to DOCX')
+        docxButton.clicked.connect(self.docxAmendments)
 
         fileLayout = QHBoxLayout()
-        fileLayout.addWidget(openButton)
-        fileLayout.addWidget(saveButton)
+        fileLayout.addWidget(openButton, 1)
+        fileLayout.addWidget(saveButton, 1)
+        fileLayout.addWidget(docxButton, 0)
 
         layout = QVBoxLayout(self)
 
@@ -119,6 +122,11 @@ class Amender(QWidget):
     def saveAmendments(self) -> None:
         path, _ = QFileDialog.getSaveFileName(self, filter=FILTER, selectedFilter=FILTER)
         self.amendmentsModel.save(path)
+
+    def docxAmendments(self) -> None:
+        path, _ = QFileDialog.getSaveFileName(self, filter='Microsoft Word files (*.docx)',
+                                              selectedFilter='Microsoft Word files (*.docx)')
+        self.amendmentsModel.exportDocx(path)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

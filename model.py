@@ -9,6 +9,8 @@ from PySide6.QtWidgets import (
     QStyledItemDelegate, QComboBox, QWidget, QStyleOptionViewItem, QLineEdit,
     QTextEdit
 )
+import docx
+import docx.shared
 
 from github import gh
 from str_manip import TeXSource, SectionValidator
@@ -18,6 +20,7 @@ ROLES = {
     Qt.ItemDataRole.EditRole,
     Qt.ItemDataRole.AccessibleTextRole,
 }
+COLUMNS = ['File', 'Section', 'Current text', 'Proposed text']
 
 class TreeFileDelegate(QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex | QPersistentModelIndex) -> QWidget:
@@ -89,7 +92,7 @@ class AmendmentsModel(QAbstractTableModel):
         if orientation == Qt.Orientation.Vertical:
             return None
         try:
-            return ['File', 'Section', 'Current text', 'Proposed text'][section]
+            return COLUMNS[section]
         except IndexError:
             return None
 
@@ -192,3 +195,26 @@ class AmendmentsModel(QAbstractTableModel):
     def save(self, path: str) -> None:
         with open(path, 'w') as f:
             json.dump(self.amendments, f, indent='\t')
+
+    def exportDocx(self, path: str) -> None:
+        document = docx.Document()
+        table = document.add_table(self.rowCount() + 1, 4)
+        table.autofit = False
+        widths = [
+            docx.shared.Length(1000000),
+            docx.shared.Length(685800),
+            docx.shared.Length(1900300),
+            docx.shared.Length(1900300),
+        ]
+        table.style = 'Table Grid'
+        for column, cell, text, width in zip(table.columns, table.rows[0].cells, COLUMNS, widths):
+            cell.text = text
+            cell.width = width
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.bold = True
+        for i, row in enumerate(self.amendments, start=1):
+            for cell, text, width in zip(table.rows[i].cells, row, widths):
+                cell.text = text
+                cell.width = width
+        document.save(path)
