@@ -19,9 +19,8 @@ jobs:
         uses: sayyid5416/pyinstaller@v1
         with:
           python_ver: '3.11'
-          spec: 'gui.py'
+          spec: 'gui.spec'
           requirements: 'requirements.txt'
-          options: --onefile, --windowed
 
       - name: Upload Artifact
         if: github.event_name == 'workflow_dispatch'

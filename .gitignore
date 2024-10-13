@@ -5,6 +5,5 @@ __pycache__/
 *.pickle
 build/
 dist/
-*.spec
 *.json
 *.docx
